@@ -3,12 +3,16 @@ package com.corvettecole.pixelwatchface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements DataClient.OnData
     private String darkSkyAPIKey;
     private boolean useDarkSky;
 
+
+    //# TODO move all non-UI code out of MainActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements DataClient.OnData
         darkSkyKeyEditText = findViewById(R.id.darkSkyEditText);
 
         setApiKey = findViewById(R.id.setApiKey);
+
+
 
 
         loadPreferences();
@@ -135,6 +143,15 @@ public class MainActivity extends AppCompatActivity implements DataClient.OnData
         });
 
 
+        updateWatchPreview();
+    }
+
+    private void updateWatchPreview(){
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        WatchPreview watchPreview = WatchPreview.newInstance(use24HourTime, showTemperature, useCelsius,
+                showWeather, darkSkyAPIKey, useDarkSky);
+        ft.replace(R.id.watchPreviewFrame, watchPreview);
+        ft.commit();
     }
 
     private void loadPreferences(){
@@ -149,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements DataClient.OnData
     private void syncToWear(){
         Toast.makeText(this, "something changed, syncing to watch", Toast.LENGTH_SHORT).show();
         loadPreferences();
+        updateWatchPreview();
         String TAG = "syncToWear";
         DataClient mDataClient = Wearable.getDataClient(this);
         PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/settings");
