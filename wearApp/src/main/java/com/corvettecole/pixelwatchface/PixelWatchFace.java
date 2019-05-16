@@ -520,11 +520,11 @@ public class PixelWatchFace extends CanvasWatchFaceService {
             //AG - CHANGED FONT COLOR TO GRAY FOR AMBIENT MODE
             if (inAmbientMode){
                 //mTimePaint.setStyle(Paint.Style.STROKE);
-                mTimePaint.setColor(0xff666666);
+                mTimePaint.setColor(Color.GRAY);
                 if (mShowInfoBarInAmbient){
                     //mDatePaint.setStyle(Paint.Style.STROKE);
-                    mDatePaint.setColor(0xff666666);
-                    mWeatherPaint.setColor(0xff666666);
+                    mDatePaint.setColor(Color.GRAY);
+                    mWeatherPaint.setColor(Color.GRAY);
                 }
             } else {
                 mTimePaint.setStyle(Paint.Style.FILL);
@@ -552,7 +552,7 @@ public class PixelWatchFace extends CanvasWatchFaceService {
             // canvas.drawRect(0, 0, bounds.width(), bounds.height(), mBackgroundPaint); does some thing
 
 
-            // Draw H:MM
+            // Draw Time
             long now = System.currentTimeMillis();
             mCalendar.setTimeInMillis(now);
 
@@ -563,85 +563,21 @@ public class PixelWatchFace extends CanvasWatchFaceService {
 
             //Draw Date
             String dateText;
-            if (mUseEuropeanDateFormat){
-                dateText = String.format("%.3s, %d %.3s", android.text.format.DateFormat.format("EEEE", mCalendar), mCalendar.get(Calendar.DAY_OF_MONTH),
-                        android.text.format.DateFormat.format("MMMM", mCalendar));
-            } else {
-                dateText = String.format("%.3s, %.3s %d", android.text.format.DateFormat.format("EEEE", mCalendar),
-                        android.text.format.DateFormat.format("MMMM", mCalendar), mCalendar.get(Calendar.DAY_OF_MONTH));
-            }
-
-
-            String temperatureText = "";
-            float totalLength = 0.0f;
+            dateText = String.format("%.3s, %.3s %d", android.text.format.DateFormat.format("EEEE", mCalendar),
+                    android.text.format.DateFormat.format("MMMM", mCalendar), mCalendar.get(Calendar.DAY_OF_MONTH));
             float centerX = bounds.exactCenterX();
             float dateTextLength = mDatePaint.measureText(dateText);
 
-            //ag - start new code to draw date
             float infoBarXOffset = centerX - (dateTextLength / 2.0f);
             float infoBarYOffset = computeInfoBarYOffset(dateText, mDatePaint);
-            if (mShowInfoBarInAmbient || !mAmbient) {
-                canvas.drawText(dateText, infoBarXOffset, mTimeYOffset + infoBarYOffset, mDatePaint);
-            }
-            //end new code
-
-            float bitmapMargin = 20.0f;
-            if (mShowTemperature && mLastWeather != null){
-                if (mUseCelsius) {
-                    if (mShowTemperatureDecimalPoint){
-                        temperatureText = String.format("%.1f °C", convertToCelsius(mLastWeather.getTemperature()));
-                    } else {
-                        temperatureText = String.format("%d °C", Math.round(convertToCelsius(mLastWeather.getTemperature())));
-                    }
-                } else {
-                    if (mShowTemperatureDecimalPoint){
-                        temperatureText = String.format("%.1f °F", mLastWeather.getTemperature());
-                    } else {
-                        temperatureText = String.format("%d °F", Math.round(mLastWeather.getTemperature()));
-                    }
-                }
-                if (mShowWeather){
-                    totalLength = mLastWeather.getIconBitmap().getWidth() + mWeatherPaint.measureText(temperatureText);
-                } else {
-                    totalLength = mWeatherPaint.measureText(temperatureText);
-                }
-            } else if (!mShowTemperature && mShowWeather && mLastWeather != null){
-                totalLength = mLastWeather.getIconBitmap().getWidth();
-            } //else {
-              //  totalLength =  mWeatherPaint.measureText(temperatureText);
-            //}
-
-            //comment out old code
-            /*
-            float infoBarXOffset = centerX - (totalLength / 2.0f);
-            float infoBarYOffset = computeInfoBarYOffset(dateText, mDatePaint);
-
-            if (mShowInfoBarInAmbient || !mAmbient) {
-                canvas.drawText(dateText, infoBarXOffset, mTimeYOffset + infoBarYOffset, mDatePaint);
-                if (mShowWeather && mLastWeather != null) {
-                    canvas.drawBitmap(mLastWeather.getIconBitmap(), infoBarXOffset + (dateTextLength + bitmapMargin / 2),
-                            mTimeYOffset + infoBarYOffset - mLastWeather.getIconBitmap().getHeight() + 6.0f, null);
-                    canvas.drawText(temperatureText, infoBarXOffset + (dateTextLength + bitmapMargin + mLastWeather.getIconBitmap().getWidth()), mTimeYOffset + infoBarYOffset, mDatePaint);
-                } else if (!mShowWeather && mShowTemperature && mLastWeather != null) {
-                    canvas.drawText(temperatureText, infoBarXOffset + (dateTextLength + bitmapMargin), mTimeYOffset + infoBarYOffset, mDatePaint);
-                }
-            }
-            */
-
-
-            //ag - new code Draw Weather
-            float weatherTextLength = totalLength; //mWeatherPaint.measureText(temperatureText);
+            canvas.drawText(dateText, infoBarXOffset, mTimeYOffset + infoBarYOffset, mDatePaint);
+            
+            //Draw Temperature
+            String temperatureText = String.format("%d °F", Math.round(mLastWeather.getTemperature()));
+            float weatherTextLength = mWeatherPaint.measureText(temperatureText);
             float infoWeatherXOffSet = centerX - (weatherTextLength / 2.0f);
             float infoWeatherYOffSet = computeInfoBarYOffset(temperatureText, mWeatherPaint);
-            if (!mAmbient && mShowWeather && mLastWeather != null) {
-                canvas.drawBitmap(mLastWeather.getIconBitmap(), infoWeatherXOffSet,
-                        mTimeYOffset + infoBarYOffset + infoWeatherYOffSet - mLastWeather.getIconBitmap().getHeight() + 6.0f, null);
-                canvas.drawText(temperatureText, infoWeatherXOffSet + (bitmapMargin/2 + mLastWeather.getIconBitmap().getWidth()), mTimeYOffset + infoBarYOffset  + infoWeatherYOffSet, mWeatherPaint);
-            } else { //if (!mShowWeather && mShowTemperature && mLastWeather != null) {
-                infoWeatherXOffSet = centerX - (mWeatherPaint.measureText(temperatureText) / 2.0f);
-                canvas.drawText(temperatureText, infoWeatherXOffSet, mTimeYOffset + infoBarYOffset + infoWeatherYOffSet, mWeatherPaint);
-            }
-            // end new code
+            canvas.drawText(temperatureText, infoWeatherXOffSet, mTimeYOffset + infoBarYOffset + infoWeatherYOffSet, mWeatherPaint);
 
 
             //draw wearOS icon
