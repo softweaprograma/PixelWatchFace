@@ -517,24 +517,6 @@ public class PixelWatchFace extends CanvasWatchFaceService {
                 mDatePaint.setAntiAlias(!inAmbientMode);
             }
 
-            //AG - CHANGED FONT COLOR TO GRAY FOR AMBIENT MODE
-            if (inAmbientMode){
-                //mTimePaint.setStyle(Paint.Style.STROKE);
-                mTimePaint.setColor(Color.GRAY);
-                if (mShowInfoBarInAmbient){
-                    //mDatePaint.setStyle(Paint.Style.STROKE);
-                    mDatePaint.setColor(Color.GRAY);
-                    mWeatherPaint.setColor(Color.GRAY);
-                }
-            } else {
-                mTimePaint.setStyle(Paint.Style.FILL);
-                mDatePaint.setStyle(Paint.Style.FILL);
-                mWeatherPaint.setStyle(Paint.Style.FILL);
-                mTimePaint.setColor(Color.WHITE);
-                mDatePaint.setColor(Color.WHITE);
-                mWeatherPaint.setColor(Color.WHITE);
-
-            }
 
             // Whether the timer should be running depends on whether we're visible (as well as
             // whether we're in ambient mode), so we may need to start or stop the timer.
@@ -607,26 +589,7 @@ public class PixelWatchFace extends CanvasWatchFaceService {
                 }
             } else if (!mShowTemperature && mShowWeather && mLastWeather != null){
                 totalLength = mLastWeather.getIconBitmap().getWidth();
-            } //else {
-              //  totalLength =  mWeatherPaint.measureText(temperatureText);
-            //}
-
-            //comment out old code
-            /*
-            float infoBarXOffset = centerX - (totalLength / 2.0f);
-            float infoBarYOffset = computeInfoBarYOffset(dateText, mDatePaint);
-
-            if (mShowInfoBarInAmbient || !mAmbient) {
-                canvas.drawText(dateText, infoBarXOffset, mTimeYOffset + infoBarYOffset, mDatePaint);
-                if (mShowWeather && mLastWeather != null) {
-                    canvas.drawBitmap(mLastWeather.getIconBitmap(), infoBarXOffset + (dateTextLength + bitmapMargin / 2),
-                            mTimeYOffset + infoBarYOffset - mLastWeather.getIconBitmap().getHeight() + 6.0f, null);
-                    canvas.drawText(temperatureText, infoBarXOffset + (dateTextLength + bitmapMargin + mLastWeather.getIconBitmap().getWidth()), mTimeYOffset + infoBarYOffset, mDatePaint);
-                } else if (!mShowWeather && mShowTemperature && mLastWeather != null) {
-                    canvas.drawText(temperatureText, infoBarXOffset + (dateTextLength + bitmapMargin), mTimeYOffset + infoBarYOffset, mDatePaint);
-                }
             }
-            */
 
 
             //ag - new code Draw Weather
@@ -644,16 +607,10 @@ public class PixelWatchFace extends CanvasWatchFaceService {
             // end new code
 
 
-            //draw wearOS icon
-            if (mAmbient){
-                float mIconXOffset = bounds.exactCenterX() - (mWearOSBitmapAmbient.getWidth() / 2.0f);
-                float mIconYOffset = mTimeYOffset - mTimeYOffset / 2 - mWearOSBitmapAmbient.getHeight() - 16.0f;
-                canvas.drawBitmap(mWearOSBitmapAmbient, mIconXOffset, mIconYOffset, null);
-            } else {
-                float mIconXOffset = bounds.exactCenterX() - (mWearOSBitmap.getWidth() / 2.0f);
-                float mIconYOffset = mTimeYOffset - mTimeYOffset / 2 - mWearOSBitmap.getHeight() - 16.0f;
-                canvas.drawBitmap(mWearOSBitmap, mIconXOffset, mIconYOffset, null);
-            }
+            float mIconXOffset = bounds.exactCenterX() - (mWearOSBitmap.getWidth() / 2.0f);
+            float mIconYOffset = mTimeYOffset - mTimeYOffset / 2 - mWearOSBitmap.getHeight() - 16.0f;
+            canvas.drawBitmap(mWearOSBitmap, mIconXOffset, mIconYOffset, null);
+
 
             if (forceWeatherUpdate || (shouldTimerBeRunning() && ((mShowTemperature || mShowWeather) && (mLastWeatherUpdateTime == 0 || (System.currentTimeMillis() - mLastWeatherUpdateTime >= 30 * ONE_MIN && System.currentTimeMillis() - mLastWeatherUpdateFailedTime > 5 * ONE_MIN))))) {
                 forceWeatherUpdate = false;
