@@ -1,0 +1,20 @@
+To install Watch apk (make sure you have ADB tools and drivers installed on your PC)
+- enable developer options 
+- connect to computer
+- enable ADB Debugging on watch
+- should see pop up on Watch to trust computer... select Always trust (3rd or so option)
+
+- Using cmd navigate to apk folder
+1) type "adb devices" and make sure you see the device number and word "device" and NOT "offline" 
+2) type "adb install pixelwatchface-watch.apk"
+
+for example, if you have downloaded the apks to C:\pixelWatchface do the following;
+
+C:\>cd C:\pixelWatchface
+
+C:\pixelWatchface>adb devices
+List of devices attached
+TKQ1234567891234        device
+
+C:\pixelWatchface>adb install pixelwatchface-watch.apk
+Success
